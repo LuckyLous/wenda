@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nowcoder.dao.FeedDAO">
+    <sql id="table">feed</sql>
+    <sql id="selectFields">id, user_id, type, created_date, data
+    </sql>
+    <select id="selectUserFeeds" resultType="com.nowcoder.model.Feed">
+        SELECT
+        <include refid="selectFields"/>
+        FROM
+        <include refid="table"/>
+
+        <!--查询id的最大边界-->
+        WHERE id &lt; #{maxId}
+
+        <!--如果遍历的集合id不为空，则加入Where判断条件-->
+        <if test="userIds.size() != 0">
+          AND user_id IN
+            <foreach item="item" collection="userIds" index="index"
+                      open="(" separator="," close=")">
+              #{item}
+            </foreach>
+        </if>
+
+        ORDER BY id DESC
+        LIMIT #{count}
+    </select>
+</mapper>
